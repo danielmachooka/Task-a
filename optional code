@@ -1,0 +1,223 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections;
+using System.Xml.Serialization;
+using System.IO;
+
+
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        private static object taskList;
+        static string menu = "To highlight use arrow  key|A:Add|press Enter:reenter|Esc:To Exit|Press n for next|press p for previous page\n";
+        static int p = 0;
+
+        public static object TaskList { get => taskList; set => taskList = value; }
+
+
+        static void Main(string[] args)
+        {
+            //creating list of strings
+
+            List<string> list1 = new List<string>();
+            list1 = readtext();
+
+
+            Program.printlist(list1);
+            ConsoleKeyInfo cki;
+            Console.TreatControlCAsInput = true;
+            do
+            {
+                cki = Console.ReadKey(true);
+                switch (cki.Key)
+                {
+                    case ConsoleKey.A:
+                        Program.addlist(list1);
+                        Program.readtext();
+                        Program.printlist(list1);
+                        break;
+                    case ConsoleKey.P:
+                        if (Program.p == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+
+                            Program.p = Program.p - 20;
+                            Program.printlist(list1);
+                            break;
+                        }
+                    case ConsoleKey.N:
+                        Program.p = Program.p + 20;
+                        Program.printlist(list1);
+                        break;
+
+                    case ConsoleKey.H:
+                        if (Program.p == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+
+                            Program.p = Program.p - 20;
+                            Program.printlist(list1);
+                            break;
+                        }
+
+                }
+            }
+            while (cki.Key != ConsoleKey.Escape);
+
+            string input;
+            int i = 1;
+
+            do
+            {
+                Console.Write($"Please enter A List of item number {i} enter save when done:  ");
+                input = Console.ReadLine();
+                list1.Add(input);
+                i++;
+            } while (input.ToUpper() != "SAVE");
+
+            System.IO.File.WriteAllLines(@"C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt", list1.GetRange(0, 19));
+            System.IO.File.WriteAllLines(@"C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List2.txt", list1.GetRange(20, 19));
+            System.IO.File.WriteAllLines(@"C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List3.txt", list1.GetRange(40, list1.Count));
+
+
+
+        }
+        static List<string> readtext()  //reading from textfile
+
+        {
+            List<string> tasklist = new List<string>();
+            string line;
+
+            try
+            {
+                StreamReader sr = new StreamReader("C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt");
+                line = sr.ReadLine();
+                while (line != null)
+                {
+                    tasklist.Add(line);
+                    line = sr.ReadLine();
+                }
+                sr.Close();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception:" + e.Message);
+            }
+            return tasklist;
+        }
+        static void addlist(List<string> list)
+        {
+            Console.WriteLine("Enter new task");
+            string input = "0" + Console.ReadLine();
+
+            using (StreamWriter sw = new StreamWriter("C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt"))
+            {
+                foreach (var line in list)
+                {
+                    sw.WriteLine($"{line}");
+                }
+                sw.Write(input);
+                sw.Close();
+            }
+        }
+        static void printlist(List<string> list)
+        {
+            if (list.Count < 21)
+            {
+
+
+                Console.Clear();
+
+                Console.WriteLine(Program.menu);
+
+                for
+                    (int i = 0; i < list.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}: {list[i]}");
+                }
+
+            }
+            else
+            {
+                Console.Clear();
+
+                Console.WriteLine(Program.menu);
+
+                for
+                    (int i = Program.p; i < 20 + Program.p && i < list.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}: {list[i]}");
+                }
+            }
+        }
+
+
+        static void Crossout(List<string> list)
+
+        {
+            Console.WriteLine("Enter current task highlighted");
+            string input = Console.ReadLine();
+
+            using (StreamWriter sw = new StreamWriter("C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt"))
+            {
+                for
+
+                (int i = Program.p; i < list.Count; i++)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkGray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+
+                    sw.WriteLine();
+                }
+                sw.Write(input);
+                sw.Close();
+            }
+
+        }
+
+        /*    static void skip(List<string> list)
+            {
+                Console.WriteLine("Click f1 to skip");
+                string input = Console.ReadLine();
+
+                using (StreamWriter sw = new StreamWriter("C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt"))
+                {
+                    foreach (var line in list)
+                    {
+                        sw.WriteLine($"{line}");
+                    }
+                    sw.Write(input);
+                    sw.Close();
+
+        */
+
+        /*
+      static void dismiss(List<string> list)
+        {
+            Console.WriteLine("Click f2 to dismiss");
+            string input = Console.ReadLine();
+
+            using (StreamWriter sw = new StreamWriter("C:\\Users\\danch\\OneDrive\\Desktop\\week4project\\List1.txt"))
+            {
+                foreach (var line in list)
+                {
+                    sw.WriteLine($"{line}");
+                }
+                sw.Write(input);
+                sw.Close(); */
+
+    }
+
+}
